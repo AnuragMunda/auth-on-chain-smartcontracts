@@ -53,9 +53,7 @@ contract TestAuthOnChain is Test {
 
     function test_CannotPutInvalidHashedKey() external {
         vm.prank(user);
-        vm.expectRevert(
-            AuthOnChain.AuthOnChain_InvalidAuthenticationKey.selector
-        );
+        vm.expectRevert(AuthOnChain.AuthOnChain_InvalidAuthenticationKey.selector);
         authOnChain.registerAuthKey(bytes32(0));
     }
 
@@ -68,10 +66,7 @@ contract TestAuthOnChain is Test {
         assertTrue(success);
     }
 
-    function test_ReturnsFalseIfAuthKeyDoesNotMatch()
-        external
-        registerUserAuthKey
-    {
+    function test_ReturnsFalseIfAuthKeyDoesNotMatch() external registerUserAuthKey {
         bytes32 signedAuthKey = keccak256("0x12346");
         bool success = authOnChain.verifyAuthKey(user, signedAuthKey);
 
@@ -84,20 +79,12 @@ contract TestAuthOnChain is Test {
         authOnChain.verifyAuthKey(user, signedAuthKey);
     }
 
-    function test_CannotVerifyIfInvalidAuthKeyGiven()
-        external
-        registerUserAuthKey
-    {
-        vm.expectRevert(
-            AuthOnChain.AuthOnChain_InvalidAuthenticationKey.selector
-        );
+    function test_CannotVerifyIfInvalidAuthKeyGiven() external registerUserAuthKey {
+        vm.expectRevert(AuthOnChain.AuthOnChain_InvalidAuthenticationKey.selector);
         authOnChain.verifyAuthKey(user, bytes32(0));
     }
 
-    function test_UserCanSetGuardianAndEmitsEvent()
-        external
-        registerUserAuthKey
-    {
+    function test_UserCanSetGuardianAndEmitsEvent() external registerUserAuthKey {
         vm.expectEmit(true, true, false, false);
         emit RecoveryGuardianSet(user, guardian);
         vm.prank(user);
@@ -113,10 +100,7 @@ contract TestAuthOnChain is Test {
         authOnChain.setGuardian(guardian);
     }
 
-    function test_RevertIfGuardianAddressIsInvalid()
-        external
-        registerUserAuthKey
-    {
+    function test_RevertIfGuardianAddressIsInvalid() external registerUserAuthKey {
         vm.prank(user);
         vm.expectRevert(AuthOnChain.AuthOnChain_InvalidAddress.selector);
         authOnChain.setGuardian(address(0));

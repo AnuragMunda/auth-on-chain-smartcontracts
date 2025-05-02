@@ -29,10 +29,7 @@ contract AuthOnChain {
                             FUNCTION MODIFIERS
     ==============================================================*/
     modifier shouldBeRegistered(address _user) {
-        require(
-            s_authKeys[_user] != bytes32(0),
-            AuthOnChain_UserNotRegistered()
-        );
+        require(s_authKeys[_user] != bytes32(0), AuthOnChain_UserNotRegistered());
         _;
     }
 
@@ -44,24 +41,13 @@ contract AuthOnChain {
     /*==============================================================
                                 FUNCTIONS
     ==============================================================*/
-    function registerAuthKey(
-        bytes32 _hashedAuthKey
-    )
-        external
-        validateAuthenticationKey(_hashedAuthKey)
-    {
-        require(
-            s_authKeys[msg.sender] == bytes32(0),
-            AuthOnChain_UserAlreadyRegistered()
-        );
+    function registerAuthKey(bytes32 _hashedAuthKey) external validateAuthenticationKey(_hashedAuthKey) {
+        require(s_authKeys[msg.sender] == bytes32(0), AuthOnChain_UserAlreadyRegistered());
         s_authKeys[msg.sender] = _hashedAuthKey;
         emit AuthKeyRegistered(msg.sender);
     }
 
-    function verifyAuthKey(
-        address _user,
-        bytes32 _hashedSignedKey
-    )
+    function verifyAuthKey(address _user, bytes32 _hashedSignedKey)
         external
         view
         shouldBeRegistered(_user)
@@ -72,9 +58,7 @@ contract AuthOnChain {
         return isVerified;
     }
 
-    function setGuardian(
-        address _guardian
-    ) external shouldBeRegistered(msg.sender) {
+    function setGuardian(address _guardian) external shouldBeRegistered(msg.sender) {
         require(_guardian != address(0), AuthOnChain_InvalidAddress());
         require(_guardian != msg.sender, AuthOnChain_GuardianCannotBeSelf());
 
@@ -82,14 +66,11 @@ contract AuthOnChain {
         emit RecoveryGuardianSet(msg.sender, _guardian);
     }
 
-    function recoverAccount(
-        address _user,
-        bytes32 _newHashedAuthKey
-    ) external validateAuthenticationKey(_newHashedAuthKey) {
-        require(
-            s_recoveryGuardians[_user] == msg.sender,
-            AuthOnChain_NotAuthorizedGuardian()
-        );
+    function recoverAccount(address _user, bytes32 _newHashedAuthKey)
+        external
+        validateAuthenticationKey(_newHashedAuthKey)
+    {
+        require(s_recoveryGuardians[_user] == msg.sender, AuthOnChain_NotAuthorizedGuardian());
 
         s_authKeys[_user] = _newHashedAuthKey;
         emit AuthKeyRecovered(_user);
@@ -100,6 +81,6 @@ contract AuthOnChain {
     }
 
     function isRegistered(address _user) external view returns (bool) {
-        return s_authKeys[_user] != bytes32(0) ;
+        return s_authKeys[_user] != bytes32(0);
     }
 }
